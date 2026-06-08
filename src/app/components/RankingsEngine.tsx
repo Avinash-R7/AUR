@@ -298,9 +298,9 @@ export default function RankingsEngine({
         header: "University Name",
         accessorKey: "name",
         cell: ({ row }) => (
-          <div className="text-left font-sans font-bold text-slate-900 hover:text-amber-700 transition-colors cursor-pointer" onClick={() => onUniversitySelect(row.original.id)}>
+          <div className="text-left font-sans font-bold text-slate-900 dark:text-slate-100 hover:text-amber-700 transition-colors cursor-pointer" onClick={() => onUniversitySelect(row.original.id)}>
             <div className="truncate max-w-50">{row.original.name}</div>
-            <div className="flex items-center text-[10px] text-slate-400 font-mono font-medium uppercase mt-0.5">
+            <div className="flex items-center text-[10px] text-slate-400 dark:text-slate-300 font-mono font-medium uppercase mt-0.5">
               <Globe className="h-3 w-3 mr-1" />
               {row.original.location}
             </div>
