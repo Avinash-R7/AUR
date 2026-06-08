@@ -155,10 +155,10 @@ export default function Homepage({
                               onUniversitySelect(uni.id);
                               setShowSuggestions(false);
                             }}
-                            className="w-full text-left flex items-center justify-between p-2 hover:bg-slate-50 transition-colors text-xs"
+                            className="w-full text-left flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-xs"
                           >
-                            <span className="font-semibold text-slate-800 truncate pr-4">{uni.name}</span>
-                            <span className="flex items-center text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded font-mono shrink-0">
+                            <span className="font-semibold text-slate-900 dark:text-slate-100 truncate pr-4">{uni.name}</span>
+                            <span className="flex items-center text-[10px] text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-cyber-gray px-1.5 py-0.5 rounded font-mono shrink-0">
                               <MapPin className="h-2.5 w-2.5 mr-0.5" />
                               {uni.location}
                             </span>
@@ -239,14 +239,14 @@ export default function Homepage({
         </div>
 
         {/* Right Pane (60% - Cols 5-10): Global Interactive Rank Card */}
-        <div className="lg:col-span-6 border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
+        <div className="lg:col-span-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-cyber-dark p-6 shadow-sm flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 mb-4">
               <div>
-                <h3 className="font-serif text-xl font-bold text-slate-900">
+                <h3 className="font-serif text-xl font-bold text-slate-900 dark:text-slate-100">
                   Live Top 5 Universities
                 </h3>
-                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
+                <p className="text-[10px] text-slate-400 dark:text-slate-300 font-semibold uppercase tracking-wider mt-0.5">
                   Real-time Audited Academic Index
                 </p>
               </div>
@@ -257,7 +257,7 @@ export default function Homepage({
             </div>
 
             {/* Quick Metrics Selector Tabs */}
-            <div className="flex border-b border-slate-100 mb-6">
+            <div className="flex border-b border-slate-100 dark:border-slate-800 mb-6">
               {[
                 { id: "overall", label: "Overall Score" },
                 { id: "research", label: "Research Metric" },
@@ -268,8 +268,8 @@ export default function Homepage({
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`relative border-b-2 px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors -mb-px ${
                     activeTab === tab.id
-                      ? "border-amber-700 text-slate-900"
-                      : "border-transparent text-slate-400 hover:text-slate-700"
+                      ? "border-amber-700 text-slate-900 dark:text-slate-100"
+                      : "border-transparent text-slate-400 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-200"
                   }`}
                 >
                   {tab.label}
@@ -300,31 +300,31 @@ export default function Homepage({
                     onClick={() => onUniversitySelect(uni.id)}
                     whileHover={{ y: -2, boxShadow: "0 14px 35px rgba(15,23,42,0.08)" }}
                     transition={{ type: "spring", stiffness: 260, damping: 24 }}
-                    className="flex items-center justify-between p-3 border border-slate-100 hover:border-slate-300 bg-slate-50 hover:bg-white cursor-pointer transition-all duration-150 group"
+                    className="flex items-center justify-between p-3 border border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50 dark:bg-cyber-gray hover:bg-white dark:hover:bg-cyber-gray/80 cursor-pointer transition-all duration-150 group"
                   >
                     <div className="flex items-center space-x-3 truncate">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center border border-slate-900 bg-slate-900 text-white font-mono text-xs font-bold">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center border border-slate-900 dark:border-slate-700 bg-slate-900 dark:bg-slate-800 text-white dark:text-slate-100 font-mono text-xs font-bold">
                         {idx + 1}
                       </span>
                       <div className="truncate">
-                        <h4 className="text-xs font-bold text-slate-900 group-hover:text-amber-700 transition-colors truncate">
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 group-hover:text-amber-700 transition-colors truncate">
                           {uni.name}
                         </h4>
-                        <span className="text-[10px] text-slate-400 font-mono">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-300 font-mono">
                           {uni.location}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4 shrink-0 font-mono">
                       <div className="text-right">
-                        <span className="text-xs font-bold text-slate-900">
+                        <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
                           {activeScore.toFixed(1)}
                         </span>
-                        <span className="text-[9px] text-slate-400 block uppercase tracking-wider">
+                        <span className="text-[9px] text-slate-400 dark:text-slate-300 block uppercase tracking-wider">
                           Score
                         </span>
                       </div>
-                      <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-all" />
+                      <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 group-hover:translate-x-0.5 transition-all" />
                     </div>
                   </motion.div>
                 );
@@ -332,13 +332,13 @@ export default function Homepage({
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-[10px] text-slate-400 font-medium">
+          <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <span className="text-[10px] text-slate-400 dark:text-slate-300 font-medium">
               * Filterable by Location, Program & Tuition.
             </span>
             <button
               onClick={() => onViewChange("rankings")}
-              className="text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-amber-700 transition-colors inline-flex items-center"
+              className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 hover:text-amber-700 dark:hover:text-amber-400 transition-colors inline-flex items-center"
             >
               Analyze All Universities
               <ChevronRight className="h-4 w-4 ml-1" />
