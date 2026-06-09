@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Navbar from "./components/navbar/Navbar";
 import Sidebar from "./components/sidebar/Sidebar";
 import MobileMenu from "./components/mobile/MobileMenu";
@@ -9,17 +9,17 @@ import Homepage from "./components/Homepage";
 import RankingsEngine from "./components/RankingsEngine";
 import ComparisonDock from "./components/ComparisonDock";
 import UniversityProfile from "./components/UniversityProfile";
+import Footer from "./components/Footer";
 import { useSidebar } from "./components/navigation/SidebarContext";
 import { Article, MOCK_UNIVERSITIES } from "./data";
-import { BarChart3, Bookmark, Settings, Award, GraduationCap, CheckCircle, ShieldAlert } from "lucide-react";
+import { BarChart3, Bookmark, Award, GraduationCap, CheckCircle, ShieldAlert } from "lucide-react";
 
 export default function AppContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const { activeView, handleViewChange, selectedUniId, setSelectedUniId, theme } = useSidebar();
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("search") ?? "");
   const [selectedUniIds, setSelectedUniIds] = useState<string[]>([]);
 
   // Local settings toggles state
@@ -30,12 +30,6 @@ export default function AppContent() {
   // Derived state from URL (synced with context)
   const view = activeView;
   const id = selectedUniId;
-
-  // Sync initial search query if present in URL
-  useEffect(() => {
-    const q = searchParams.get("search");
-    if (q) setSearchQuery(q);
-  }, [searchParams]);
 
   const handleToggleCompare = (uniId: string) => {
     setSelectedUniIds((prev) => {
@@ -72,7 +66,7 @@ export default function AppContent() {
   const savedUniversities = MOCK_UNIVERSITIES.filter((u) => selectedUniIds.includes(u.id));
 
   return (
-    <div className={`flex min-h-screen flex-col transition-colors duration-300 ${
+    <div className={`relative overflow-x-hidden flex min-h-screen flex-col transition-colors duration-300 ${
       theme === "dark" ? "bg-cyber-black text-slate-100 dark" : "bg-white text-slate-900"
     }`}>
       {/* Top Navigation Bar */}
@@ -85,7 +79,7 @@ export default function AppContent() {
         <Sidebar />
 
         {/* Main Content Area */}
-        <main className="flex-1 flex flex-col min-w-0 p-4 pb-20 md:pb-6">
+        <main className="flex-1 flex flex-col min-w-0 p-4 pb-28 md:pb-6">
           
           {view === "home" && (
             <Homepage
@@ -344,12 +338,7 @@ export default function AppContent() {
         onUniversitySelect={handleUniversitySelect}
       />
 
-      {/* Universal Footer */}
-      <footer className="border-t border-slate-200 dark:border-cyber-border bg-slate-50 dark:bg-cyber-dark/80 py-8 transition-colors duration-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-slate-500">
-          © 2026 Asia University Rankings | Official Analytical Data Engine
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
