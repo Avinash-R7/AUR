@@ -37,6 +37,12 @@ interface SidebarContextType {
   handleViewChange: (view: string) => void;
   selectedUniId: string | null;
   setSelectedUniId: (id: string | null) => void;
+  selectedUniIds: string[];
+  handleToggleCompare: (uniId: string) => void;
+  handleRemoveCompare: (uniId: string) => void;
+  handleClearCompare: () => void;
+  isChatOpen: boolean;
+  setIsChatOpen: (val: boolean) => void;
 }
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
@@ -54,6 +60,8 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("light");
   const [filters, setFilters] = useState<FilterState>(initialFilters);
+  const [selectedUniIds, setSelectedUniIds] = useState<string[]>([]);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Read localStorage for isCollapsed and theme (safe for SSR)
   useEffect(() => {
@@ -69,8 +77,53 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
       } else {
         setTheme("light");
       }
+
+      const savedCompared = localStorage.getItem("compared_uni_ids");
+      if (savedCompared) {
+        try {
+          setSelectedUniIds(JSON.parse(savedCompared));
+        } catch (error) {
+          console.error(error);
+        }
+      }
     }
   }, []);
+
+  const handleToggleCompare = (uniId: string) => {
+    setSelectedUniIds((prev) => {
+      const next = prev.includes(uniId)
+        ? prev.filter((id) => id !== uniId)
+        : [...prev, uniId];
+
+      if (next.length > 4) {
+        alert("You can compare a maximum of 4 universities at a time.");
+        return prev;
+      }
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("compared_uni_ids", JSON.stringify(next));
+      }
+
+      return next;
+    });
+  };
+
+  const handleRemoveCompare = (uniId: string) => {
+    setSelectedUniIds((prev) => {
+      const next = prev.filter((id) => id !== uniId);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("compared_uni_ids", JSON.stringify(next));
+      }
+      return next;
+    });
+  };
+
+  const handleClearCompare = () => {
+    setSelectedUniIds([]);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("compared_uni_ids");
+    }
+  };
 
   // Write collapse state to localStorage
   const setIsCollapsed = (val: boolean) => {
@@ -157,6 +210,12 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
         handleViewChange,
         selectedUniId,
         setSelectedUniId,
+        selectedUniIds,
+        handleToggleCompare,
+        handleRemoveCompare,
+        handleClearCompare,
+        isChatOpen,
+        setIsChatOpen,
       }}
     >
       {children}

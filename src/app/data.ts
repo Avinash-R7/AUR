@@ -8,6 +8,9 @@ export interface University {
   intlStudents: number; // 0-100
   teaching: number; // 0-100
   research: number; // 0-100
+  academicReputation?: number;
+  employerReputation?: number;
+  facultyStudentRatio?: number;
   subjects: string[];
   languages: string[];
   tuition: string; // e.g. "$3,500/year"
@@ -15,7 +18,13 @@ export interface University {
   history: number[]; // 5-year rank history (from current year back to 5 years ago, e.g., 2026, 2025, 2024, 2023, 2022)
   programs: string[];
   campusPhoto: string; // unsplash ID or generic descriptor
+  website?: string;
   hasMedicine: boolean;
+  qsSubjectRankings?: {
+    subject: string;
+    worldRank: string;
+    score: number;
+  }[];
   // Optional flags used by filters. When missing, UI falls back to legacy ID-based rules.
   isPublic?: boolean;
   hasScholarship?: boolean;
@@ -1002,6 +1011,9 @@ export interface Article {
   readTime: string;
   contentSummary: string;
   image: string;
+  content?: string;
+  category?: string;
+  tags?: string[];
 }
 
 export const FEATURED_ARTICLES: Article[] = [
