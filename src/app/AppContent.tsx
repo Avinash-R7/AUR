@@ -1,23 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useState, useEffect, useMemo } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "./components/navbar/Navbar";
 import Sidebar from "./components/sidebar/Sidebar";
 import MobileMenu from "./components/mobile/MobileMenu";
 import Homepage from "./components/Homepage";
 import RankingsEngine from "./components/RankingsEngine";
+import ComparisonDock from "./components/ComparisonDock";
 import UniversityProfile from "./components/UniversityProfile";
-import UniversitiesList from "./components/UniversitiesList";
 import Footer from "./components/Footer";
 import FloatingChatAssistant from "./components/FloatingChatAssistant";
 import AnalyticsDashboard from "./components/AnalyticsDashboard";
-import ComparisonDock from "./components/ComparisonDock";
 import { useSidebar } from "./components/navigation/SidebarContext";
 import { Article, MOCK_UNIVERSITIES } from "./data";
 import { Bookmark, ShieldAlert } from "lucide-react";
 
 export default function AppContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const {
@@ -44,6 +45,15 @@ export default function AppContent() {
   const view = activeView;
   const id = selectedUniId;
 
+  // A key to force AnimatePresence re-mount on view change
+  const viewKey = view + (id ?? "");
+
+  const handleToggleSave = (uniId: string) => {
+    setSavedUniIds((prev) =>
+      prev.includes(uniId) ? prev.filter((id) => id !== uniId) : [...prev, uniId]
+    );
+  };
+
   const handleUniversitySelect = (uniId: string) => {
     setSelectedUniId(uniId);
   };
@@ -53,36 +63,36 @@ export default function AppContent() {
   };
 
   const handleArticleSelect = (article: Article) => {
-    // Navigate to blog article
-    window.location.href = `/blogs/${article.id}`;
-  };
-
-  const handleToggleSave = (uniId: string) => {
-    setSavedUniIds((prev) => {
-      if (prev.includes(uniId)) return prev.filter((id) => id !== uniId);
-      return [...prev, uniId];
-    });
+    router.push(`/blogs/${article.id}`);
   };
 
   // Get selected universities for Saved view
   const savedUniversities = MOCK_UNIVERSITIES.filter((u) => savedUniIds.includes(u.id));
 
   return (
-    <div className={`relative overflow-x-hidden flex min-h-screen flex-col transition-colors duration-300 ${
-      theme === "dark" ? "bg-cyber-black text-slate-100 dark" : "bg-white text-slate-900"
+    <div className={`${view === "home" ? "bg-gradient-to-b from-amber-50/50 via-white to-blue-50" : "aur-page"} flex min-h-screen flex-col transition-colors duration-300 ${
+      theme === "dark" && view !== "home" ? "text-slate-100 dark" : "text-slate-900"
     }`}>
       {/* Top Navigation Bar */}
       <Navbar />
 
-      {/* Main Core Layout */}
+      {/* Main Core Layout Layout */}
       <div className="flex-grow flex w-full max-w-7xl mx-auto px-0 sm:px-4 lg:px-8">
         
         {/* Collapsible Left Sidebar */}
         <Sidebar />
 
         {/* Main Content Area */}
-        <main className="flex-1 flex flex-col min-w-0 p-4 pb-28 md:pb-6">
-          
+        <main className={`flex-1 flex flex-col min-w-0 pb-20 md:pb-6 w-full mx-auto ${view === "home" ? "p-0 max-w-none" : "p-4 max-w-[1600px]"}`}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={viewKey}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className="flex flex-col flex-grow"
+            >
           {view === "home" && (
             <Homepage
               onSearchSubmit={(q) => setSearchQuery(q)}
@@ -92,23 +102,12 @@ export default function AppContent() {
             />
           )}
 
-          {view === "universities" && (
-            <UniversitiesList
-              onUniversitySelect={handleUniversitySelect}
-              onViewChange={handleViewChange}
-              savedUniIds={savedUniIds}
-              onToggleSave={handleToggleSave}
-            />
-          )}
-
           {view === "rankings" && (
             <RankingsEngine
               searchQuery={searchQuery}
               onSearchQueryChange={setSearchQuery}
               selectedUniIds={selectedUniIds}
               onToggleCompare={handleToggleCompare}
-              savedUniIds={savedUniIds}
-              onToggleSave={handleToggleSave}
               onUniversitySelect={handleUniversitySelect}
             />
           )}
@@ -126,18 +125,18 @@ export default function AppContent() {
           {/* Analytics Dashboard */}
           {view === "analytics" && <AnalyticsDashboard />}
 
-          {/* Saved Items Panel */}
+          {/* 2. Saved Items Mock Panel */}
           {view === "saved" && (
-            <div className="w-full mx-auto p-6 border border-slate-200 dark:border-cyber-border rounded-xl bg-slate-50/50 dark:bg-cyber-dark/40 shadow-sm space-y-6 animate-fadeIn">
+            <div className="w-full mx-auto w-full p-6 border border-slate-200 dark:border-cyber-border rounded-xl bg-slate-50/50 dark:bg-cyber-dark/40 shadow-sm space-y-6 animate-fadeIn">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-widest text-amber-700 dark:text-cyber-yellow">
                   Personal Database
                 </span>
                 <h2 className="font-serif text-2xl font-bold text-slate-900 dark:text-white mt-0.5">
-                  Shortlisted Universities
+                  Saved Comparison Nodes
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                  List of institutions currently shortlisted for further analysis.
+                  List of institutions currently pinned inside the analysis comparators dock.
                 </p>
               </div>
 
@@ -185,9 +184,9 @@ export default function AppContent() {
             </div>
           )}
 
-          {/* Settings Panel */}
+          {/* 3. Settings Mock Panel */}
           {view === "settings" && (
-            <div className="w-full mx-auto p-6 border border-slate-200 dark:border-cyber-border rounded-xl bg-slate-50/50 dark:bg-cyber-dark/40 shadow-sm space-y-6 animate-fadeIn">
+            <div className="w-full mx-auto w-full p-6 border border-slate-200 dark:border-cyber-border rounded-xl bg-slate-50/50 dark:bg-cyber-dark/40 shadow-sm space-y-6 animate-fadeIn">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-widest text-amber-700 dark:text-cyber-yellow">
                   System Diagnostics
@@ -257,7 +256,7 @@ export default function AppContent() {
               {/* Reset Database Button */}
               <div className="pt-4 border-t border-slate-200 dark:border-slate-800 max-w-xl">
                 <div className="flex items-center space-x-2 text-amber-700 dark:text-cyber-yellow mb-2">
-                  <ShieldAlert className="h-4 w-4" />
+                  <ShieldAlert className="h-4.5 w-4.5" />
                   <span className="font-bold text-xs uppercase tracking-wider">Danger Zone</span>
                 </div>
                 <button
@@ -267,7 +266,7 @@ export default function AppContent() {
                       window.location.reload();
                     }
                   }}
-                  className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 dark:bg-red-950/20 dark:hover:bg-red-950/40 dark:border-red-900 dark:text-red-400 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded transition-colors"
+                  className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-750 dark:bg-red-950/20 dark:hover:bg-red-950/40 dark:border-red-900 dark:text-red-400 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded transition-colors"
                 >
                   Reset Local Storage Cache
                 </button>
@@ -275,13 +274,13 @@ export default function AppContent() {
             </div>
           )}
 
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 
       {/* Mobile Responsive Navigation Drawer & Bottom Bar */}
       <MobileMenu />
-
-      <FloatingChatAssistant />
 
       <ComparisonDock
         selectedIds={selectedUniIds}
@@ -290,7 +289,13 @@ export default function AppContent() {
         onUniversitySelect={handleUniversitySelect}
       />
 
-      <Footer />
+      <FloatingChatAssistant />
+
+      <footer className="border-t border-slate-200 dark:border-cyber-border bg-slate-50 dark:bg-cyber-dark/80 py-8 transition-colors duration-200">
+        <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8 text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-slate-500">
+          © 2026 Asia University Rankings | Official Analytical Data Engine
+        </div>
+      </footer>
     </div>
   );
 }
